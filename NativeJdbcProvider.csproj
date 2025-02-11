@@ -1,0 +1,54 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>None</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="JDBC.NET.Data" Version="3.5.10" />
+    <PackageReference Include="J2NET.Runtime.linux-x64" Version="1.4.1" ExcludeAssets="All" IncludeAssets="runtime" GeneratePathProperty="true" />
+    <PackageReference Include="J2NET.Runtime.win-x64" Version="1.4.1" ExcludeAssets="All" IncludeAssets="runtime" GeneratePathProperty="true" />
+    <PackageReference Include="Wyn.Data.Provider.Custom" Version="1.81.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <OpenJREWin64 Include="$(PkgJ2NET_Runtime_win-x64)\openjre\**\*.*" />
+    <OpenJRELinux64 Include="$(PkgJ2NET_Runtime_linux-x64)\openjre\**\*.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="jdbc_16x16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="jdbc_180x130.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="mssql-jdbc-12.8.1.jre8.jar">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="UserGuide.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <Target Name="CopyJRERuntimes" AfterTargets="Build">
+    <Copy SourceFiles="@(OpenJREWin64)" DestinationFiles="$(OutDir)\runtimes\win-x64\openjre\%(RecursiveDir)\%(Filename)%(Extension)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(OpenJRELinux64)" DestinationFiles="$(OutDir)\runtimes\linux-x64\openjre\%(RecursiveDir)\%(Filename)%(Extension)" SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="PublishJRERuntimes" AfterTargets="ComputeFilesToPublish">
+    <ItemGroup>
+      <DistFiles Include="$(OutDir)\runtimes\**\*.*" />
+      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+        <RelativePath>runtimes\%(DistFiles.RecursiveDir)\%(DistFiles.FileName)%(DistFiles.Extension)</RelativePath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
+
+</Project>
